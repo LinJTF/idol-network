@@ -13,8 +13,39 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+func startSqliteDb(tableName string, databasePath string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite3", databasePath)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = db.Exec(fmt.Sprintf(`
+		CREATE TABLE IF NOT EXISTS %s (
+			ID INTEGER PRIMARY KEY AUTOINCREMENT,
+			Name TEXT,
+			Email TEXT,
+			BirthDate TEXT,
+			Phone TEXT,
+			DocumentNumber TEXT,
+			Street TEXT,
+			Number TEXT,
+			Complement TEXT,
+			City TEXT,
+			Country TEXT,
+			State TEXT,
+			ZipCode TEXT
+		)
+	`, tableName))
+	if err != nil {
+		db.Close()
+		return nil, err
+	}
+
+	return db, nil
+}
+
 func main() {
-	db, err := sql.Open("sqlite3", "./socialBuddies.db")
+	db, err := startSqliteDb("Users", "./internal/db/socialBuddies.db")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,6 +59,9 @@ func main() {
 	r.Use(middleware.Logger)
 
 	r.Get("/v1/user", userHandler.GetUsers)
+	r.Get("/v1/user/{id}", userHandler.GetUserByID)
+	r.Get("/v1/user/email/{email}", userHandler.GetUserByEmail)
+	r.Post("/v1/user", userHandler.CreateUser)
 
 	fmt.Println("Server listening on port 8081...")
 	if err := http.ListenAndServe(":8081", r); err != nil {
