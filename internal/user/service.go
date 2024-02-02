@@ -25,10 +25,6 @@ func (s *service) GetUsers(_ context.Context) ([]User, error) {
 		return nil, err
 	}
 
-	if len(users) == 0 {
-		return nil, errors.New("no users found")
-	}
-
 	return users, nil
 }
 
