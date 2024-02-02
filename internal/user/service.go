@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 )
 
 type Service interface {
@@ -18,7 +19,17 @@ type service struct {
 }
 
 func (s *service) GetUsers(_ context.Context) ([]User, error) {
-	return s.repo.GetUsers()
+	users, err := s.repo.GetUsers()
+	if err != nil {
+		log.Printf("Error getting users: %v", err)
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, errors.New("no users found")
+	}
+
+	return users, nil
 }
 
 func (s *service) GetUserByID(_ context.Context, id int) (*User, error) {
