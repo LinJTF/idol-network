@@ -29,7 +29,7 @@ type APIAddress struct {
 	CEP        string `json:"cep"`
 }
 
-func convertFromAPIAddressToAddress(apiAddress APIAddress, number string) *Address {
+func convertFromAPIAddressToAddress(apiAddress *APIAddress, number string) *Address {
 	address := &Address{
 		Street:     apiAddress.Logradouro,
 		Complement: apiAddress.Complement,

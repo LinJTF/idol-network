@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func GetAddressInfo(zipcode string) (*Address, error) {
+func GetAddressInfo(zipcode string) (*APIAddress, error) {
 	url := fmt.Sprintf("https://viacep.com.br/ws/%s/json/", zipcode)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -19,7 +19,5 @@ func GetAddressInfo(zipcode string) (*Address, error) {
 		return nil, err
 	}
 
-	address := convertFromAPIAddressToAddress(apiAddress, "")
-
-	return address, nil
+	return &apiAddress, nil
 }

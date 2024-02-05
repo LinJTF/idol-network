@@ -51,9 +51,7 @@ func (s *service) CreateUser(_ context.Context, user User) (User, error) {
 		return User{}, err
 	}
 
-	apiAddress := convertFromAddressToApiAddress(*address)
-
-	internalAddress := convertFromAPIAddressToAddress(*apiAddress, user.Address.Number)
+	internalAddress := convertFromAPIAddressToAddress(address, user.Address.Number)
 
 	log.Println("Address info: ", internalAddress)
 
