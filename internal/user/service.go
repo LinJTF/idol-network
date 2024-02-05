@@ -46,6 +46,19 @@ func (s *service) CreateUser(_ context.Context, user User) (User, error) {
 		return User{}, errors.New("user with the provided email already exists")
 	}
 
+	address, err := GetAddressInfo(user.Address.ZipCode)
+	if err != nil {
+		return User{}, err
+	}
+
+	apiAddress := convertFromAddressToApiAddress(*address)
+
+	internalAddress := convertFromAPIAddressToAddress(*apiAddress, user.Address.Number)
+
+	log.Println("Address info: ", internalAddress)
+
+	user.Address = *internalAddress
+
 	newUser, err := s.repo.CreateUser(user)
 	if err != nil {
 		return User{}, err
