@@ -39,23 +39,14 @@ func TestHandler_GetUsers(t *testing.T) {
 	mockService := &mockService{}
 
 	tests := []struct {
-		name        string
-		mockResult  []User
-		mockErr     error
-		wantedCode  int
-		wantedUsers []User
-		wantedErr   string
+		name       string
+		mockResult []User
+		mockErr    error
 	}{
 		{
-			name: "GetUsers_Success",
-			mockResult: []User{
-				{ID: 1, Name: "Lin", Email: "lin@vocedm.com.br"},
-				{ID: 2, Name: "Xuxu", Email: "xuxu@vocedm.com.br"},
-			},
-			mockErr:     nil,
-			wantedCode:  http.StatusOK,
-			wantedUsers: []User{{ID: 1, Name: "Lin", Email: "lin@vocedm.com.br"}, {ID: 2, Name: "Xuxu", Email: "xuxu@vocedm.com.br"}},
-			wantedErr:   "",
+			name:       "GetUsers_Success",
+			mockResult: []User{{ID: 1, Name: "Lin", Email: "lin@vocedm.com.br"}},
+			mockErr:    nil,
 		},
 	}
 
@@ -69,23 +60,23 @@ func TestHandler_GetUsers(t *testing.T) {
 			handler := NewUserHandler(mockService)
 			handler.GetUsers(rr, req)
 
-			if status := rr.Code; status != tt.wantedCode {
-				t.Errorf("handler returned wrong status code: got %v, want %v", status, tt.wantedCode)
+			if status := rr.Code; status != http.StatusOK {
+				t.Errorf("handler returned wrong status code: got %v, want %v", status, http.StatusOK)
 			}
 
-			if tt.wantedCode == http.StatusOK {
+			if tt.mockErr == nil {
 				var gotUsers []User
 				err := json.Unmarshal(rr.Body.Bytes(), &gotUsers)
 				if err != nil {
 					t.Fatalf("could not unmarshal response body: %v", err)
 				}
 
-				if !reflect.DeepEqual(gotUsers, tt.wantedUsers) {
-					t.Errorf("handler returned unexpected body: got %v, want %v", gotUsers, tt.wantedUsers)
+				if !reflect.DeepEqual(gotUsers, tt.mockResult) {
+					t.Errorf("handler returned unexpected body: got %v, want %v", gotUsers, tt.mockResult)
 				}
 			} else {
-				if gotBody := rr.Body.String(); gotBody != tt.wantedErr {
-					t.Errorf("handler returned unexpected error: got %v, want %v", gotBody, tt.wantedErr)
+				if gotBody := rr.Body.String(); gotBody != tt.mockErr.Error() {
+					t.Errorf("handler returned unexpected error: got %v, want %v", gotBody, tt.mockErr)
 				}
 			}
 		})
